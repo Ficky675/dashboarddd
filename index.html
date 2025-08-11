@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Monitoring Kandang Ayam</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #1a2332;
+            color: white;
+            min-height: 100vh;
+            padding: 15px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: auto 1fr;
+            gap: 15px;
+            height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            grid-column: 1 / -1;
+            background: #2d3e54;
+            border-radius: 12px;
+            padding: 20px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .logo {
+            width: 90px;
+            height: 90px;
+            background: #ffd700;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .chicken-icon {
+            width: 60px;
+            height: 60px;
+            background: white;
+            border-radius: 50%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chicken-icon::before {
+            content: '';
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            width: 44px;
+            height: 44px;
+            background: #ff6b6b;
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            transform: rotate(-10deg);
+        }
+
+        .chicken-icon::after {
+            content: '';
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            width: 36px;
+            height: 36px;
+            background: white;
+            border-radius: 50%;
+            border: 2px solid #333;
+        }
+
+        .title-section h1 {
+            color: #ffd700;
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+
+        .subtitle {
+            color: #87ceeb;
+            font-size: 18px;
+        }
+
+        .time-display {
+            font-size: 42px;
+            font-weight: bold;
+            color: white;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Left Panel */
+        .left-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding-right: 10px;
+        }
+
+        .kandangku-title {
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: #3a4b63;
+            border: 1px solid #4a5a73;
+            border-radius: 12px;
+            padding: 20px 15px;
+            text-align: center;
+        }
+
+        .stat-icon {
+            font-size: 28px;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: bold;
+            margin: 10px 0 8px 0;
+            color: white;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #b0b0b0;
+        }
+
+        /* Environment Cards */
+        .environment-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: auto auto;
+            gap: 15px;
+        }
+
+        .light-card {
+            background: linear-gradient(135deg, #ff8c42, #ffa726);
+            border-radius: 15px;
+            padding: 25px;
+            position: relative;
+        }
+
+        .light-icon {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .light-title {
+            font-size: 16px;
+            margin-bottom: 8px;
+            color: white;
+        }
+
+        .light-status {
+            font-size: 14px;
+            margin-bottom: 15px;
+            color: white;
+        }
+
+        .light-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .temp-card {
+            background: #3a4b63;
+            border: 1px solid #4a5a73;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .temp-icon {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .temp-title {
+            font-size: 16px;
+            margin-bottom: 8px;
+            color: white;
+        }
+
+        .temp-status {
+            font-size: 14px;
+            margin-bottom: 15px;
+            color: #4ade80;
+        }
+
+        .temp-large {
+            font-size: 64px;
+            font-weight: bold;
+            color: white;
+            margin: 15px 0;
+        }
+
+        .temp-bar {
+            height: 8px;
+            background: linear-gradient(to right, #4ade80 0%, #4ade80 70%, #e5e5e5 70%, #e5e5e5 100%);
+            border-radius: 4px;
+            margin: 15px 0 10px 0;
+        }
+
+        .temp-recommendation {
+            font-size: 12px;
+            color: #b0b0b0;
+        }
+
+        .altitude-card {
+            grid-column: 1 / -1;
+            background: #3a4b63;
+            border: 1px solid #4a5a73;
+            border-radius: 15px;
+            padding: 20px;
+        }
+
+        .altitude-icon {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .altitude-title {
+            font-size: 16px;
+            margin-bottom: 5px;
+            color: white;
+        }
+
+        .altitude-subtitle {
+            font-size: 12px;
+            color: #b0b0b0;
+            margin-bottom: 15px;
+        }
+
+        .altitude-value {
+            font-size: 36px;
+            font-weight: bold;
+            color: white;
+        }
+
+        /* Right Panel */
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding-left: 10px;
+        }
+
+        .chart-container {
+            background: #2d3e54;
+            border-radius: 12px;
+            padding: 25px;
+            flex: 1;
+        }
+
+        .chart-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .chart-icon {
+            font-size: 22px;
+        }
+
+        .chart-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .legend {
+            display: flex;
+            gap: 25px;
+            font-size: 12px;
+            margin-bottom: 20px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-color {
+            width: 14px;
+            height: 14px;
+            border-radius: 2px;
+        }
+
+        .chart-area {
+            height: 180px;
+            background: #1a2332;
+            border-radius: 8px;
+            position: relative;
+            padding: 20px;
+        }
+
+        .chart-grid {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            bottom: 20px;
+            background-image: 
+                linear-gradient(to right, rgba(255,255,255,0.1) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+
+        .chart-line-yellow {
+            position: absolute;
+            bottom: 50px;
+            left: 20px;
+            right: 20px;
+            height: 3px;
+            background: #ffd700;
+            border-radius: 2px;
+        }
+
+        .chart-line-blue {
+            position: absolute;
+            bottom: 70px;
+            left: 20px;
+            right: 20px;
+            height: 3px;
+            background: #4a90e2;
+            border-radius: 2px;
+        }
+
+        .chart-line-red {
+            position: absolute;
+            bottom: 90px;
+            left: 20px;
+            right: 20px;
+            height: 3px;
+            background: #ff6b6b;
+            border-radius: 2px;
+        }
+
+        /* Control Panel */
+        .control-panel {
+            background: #2d3e54;
+            border-radius: 12px;
+            padding: 25px;
+        }
+
+        .control-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .control-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .control-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 22px;
+            border-radius: 12px;
+        }
+
+        .kipas {
+            background: linear-gradient(135deg, #ff6b35, #f7931e);
+        }
+
+        .pompa {
+            background: linear-gradient(135deg, #4a90e2, #357abd);
+        }
+
+        .pakan {
+            background: linear-gradient(135deg, #ffa726, #ff8f00);
+        }
+
+        .control-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .control-icon {
+            font-size: 24px;
+        }
+
+        .control-info {
+            color: white;
+        }
+
+        .control-name {
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 4px;
+        }
+
+        .control-status {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 6px;
+        }
+
+        .status-mati {
+            background: #ff4444;
+        }
+
+        .control-button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .control-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto auto;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .header {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+                padding: 20px;
+            }
+            
+            .logo-section {
+                justify-content: center;
+            }
+            
+            .title-section h1 {
+                font-size: 24px;
+            }
+            
+            .time-display {
+                font-size: 32px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .environment-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .temp-large {
+                font-size: 48px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo-section">
+                <div class="logo">
+                    <div class="chicken-icon"></div>
+                </div>
+                <div class="title-section">
+                    <h1>DASHBOARD MONITORING KANDANG AYAM</h1>
+                    <p class="subtitle">Selamat Datang! <span style="color: #87ceeb;">Ayam Sehat, Telurpun Lezat!</span></p>
+                </div>
+            </div>
+            <div class="time-display">13:41:30</div>
+        </div>
+
+        <!-- Left Panel -->
+        <div class="left-panel">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-icon">🐔</span>
+                    <div class="stat-value">3200</div>
+                    <div class="stat-label">Jumlah Ayam</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-icon">🥄</span>
+                    <div class="stat-value">510</div>
+                    <div class="stat-label">Jumlah Pakan</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-icon">💧</span>
+                    <div class="stat-value">180</div>
+                    <div class="stat-label">Air Minum</div>
+                </div>
+            </div>
+
+            <div class="environment-grid">
+                <div class="light-card">
+                    <div class="light-icon">💡</div>
+                    <div class="light-title">Intensitas Cahaya</div>
+                    <div class="light-status">Status Lampu: <strong>MENYALA</strong> ⚙️</div>
+                    <div class="light-value">48699 Lux</div>
+                </div>
+
+                <div class="temp-card">
+                    <div class="temp-icon">🌡️</div>
+                    <div class="temp-title">Suhu Kandang</div>
+                    <div class="temp-status">Status: <strong>IDEAL</strong></div>
+                    <div class="temp-large">27.6°C</div>
+                    <div class="temp-bar"></div>
+                    <div class="temp-recommendation">Rekomendasi: <strong>24-30°C</strong> untuk ayam petelur</div>
+                </div>
+
+                <div class="altitude-card">
+                    <div class="altitude-icon">🏔️</div>
+                    <div class="altitude-title">Ketinggian Lokasi</div>
+                    <div class="altitude-subtitle">Dari permukaan laut</div>
+                    <div class="altitude-value">452.8 mdpl</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Panel -->
+        <div class="right-panel">
+            <div class="chart-container">
+                <div class="chart-header">
+                    <span class="chart-icon">📊</span>
+                    <span class="chart-title">Grafik Suhu & Kelembapan</span>
+                </div>
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #ffd700;"></div>
+                        <span>Suhu (°C)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #4a90e2;"></div>
+                        <span>Kelembapan (%)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #ff6b6b;"></div>
+                        <span>Tekanan (hPa)</span>
+                    </div>
+                </div>
+                <div class="chart-area">
+                    <div class="chart-grid"></div>
+                    <div class="chart-line-yellow"></div>
+                    <div class="chart-line-blue"></div>
+                    <div class="chart-line-red"></div>
+                </div>
+            </div>
+
+            <div class="control-panel">
+                <div class="control-title">Kontrol Peralatan</div>
+                <div class="control-grid">
+                    <div class="control-item kipas">
+                        <div class="control-left">
+                            <span class="control-icon">🌪️</span>
+                            <div class="control-info">
+                                <div class="control-name">Kipas</div>
+                                <div class="control-status">Status: <span class="status-dot status-mati"></span>Mati</div>
+                            </div>
+                        </div>
+                        <button class="control-button" onclick="toggleDevice('kipas', this)">🔄 Nyalakan</button>
+                    </div>
+
+                    <div class="control-item pompa">
+                        <div class="control-left">
+                            <span class="control-icon">💧</span>
+                            <div class="control-info">
+                                <div class="control-name">Pompa</div>
+                                <div class="control-status">Status: <span class="status-dot status-mati"></span>Mati</div>
+                            </div>
+                        </div>
+                        <button class="control-button" onclick="toggleDevice('pompa', this)">🔄 Nyalakan</button>
+                    </div>
+
+                    <div class="control-item pakan">
+                        <div class="control-left">
+                            <span class="control-icon">🍽️</span>
+                            <div class="control-info">
+                                <div class="control-name">Pakan</div>
+                                <div class="control-status">Status: <span class="status-dot status-mati"></span>Mati</div>
+                            </div>
+                        </div>
+                        <button class="control-button" onclick="toggleDevice('pakan', this)">🔄 Nyalakan</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleDevice(deviceName, button) {
+            const statusElement = button.parentElement.querySelector('.control-status');
+            const statusDot = statusElement.querySelector('.status-dot');
+            
+            if (button.textContent.includes('Nyalakan')) {
+                button.innerHTML = '⏹️ Matikan';
+                statusElement.innerHTML = `Status: <span class="status-dot" style="background: #44ff44;"></span>Hidup`;
+            } else {
+                button.innerHTML = '🔄 Nyalakan';
+                statusElement.innerHTML = `Status: <span class="status-dot status-mati"></span>Mati`;
+            }
+        }
+    </script>
+</body>
+</html>
